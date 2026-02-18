@@ -1,78 +1,51 @@
 "use server";
 
-import { z } from "zod";
-import { db } from "~/server/db";
 import { auth } from "~/server/auth";
+import { db } from "~/server/db";
+import { revalidatePath } from "next/cache";
 
-const submitVerificationSchema = z.object({
-    idCardImageUrl: z.string().url("Invalid image URL"),
-});
+export async function submitVerification(input: {
+    fileUrl: string;
+    fileKey: string;
+}) {
+    const session = await auth();
 
-/**
- * Submit identity verification with uploaded ID card image
- */
-export async function submitIdentityVerification(input: { idCardImageUrl: string }) {
+    if (!session?.user) {
+        return { success: false, error: "Unauthorized" };
+    }
+
     try {
-        const session = await auth();
-
-        if (!session?.user) {
-            return {
-                success: false,
-                error: "Unauthorized. Please log in.",
-            };
-        }
-
-        // Validate input
-        const { idCardImageUrl } = submitVerificationSchema.parse(input);
-
-        // Check if user already has a verification record
-        const existingVerification = await db.identityVerification.findUnique({
-            where: { userId: session.user.id },
-        });
-
-        if (existingVerification) {
-            return {
-                success: false,
-                error: "Verification already submitted. Please wait for review.",
-            };
-        }
-
-        // Create verification record
-        await db.identityVerification.create({
-            data: {
+        // Create or update the identity verification record
+        // Using upsert in case a record already exists (e.g. from a failed previous attempt/rejected state)
+        await db.identityVerification.upsert({
+            where: {
                 userId: session.user.id,
-                idCardImageUrl,
+            },
+            create: {
+                userId: session.user.id,
+                idCardImageUrl: input.fileUrl,
                 status: "PENDING",
+            },
+            update: {
+                idCardImageUrl: input.fileUrl,
+                status: "PENDING",
+                rejectionReason: null, // Clear any previous rejection reason
+                submittedAt: new Date(),
             },
         });
 
-        // Update user verification status to PENDING
+        // Update user status to PENDING
         await db.user.update({
             where: { id: session.user.id },
             data: { verificationStatus: "PENDING" },
         });
 
-        return {
-            success: true,
-            message: "Identity verification submitted successfully",
-        };
+        revalidatePath("/verify-identity");
+        revalidatePath("/"); // Update dashboard status as well
+
+        return { success: true };
     } catch (error) {
-        console.error("Submit Identity Verification Error:", {
-            userId: (await auth())?.user?.id,
-            error: error instanceof Error ? error.message : String(error),
-            stack: error instanceof Error ? error.stack : undefined,
-        });
-
-        if (error instanceof z.ZodError) {
-            return {
-                success: false,
-                error: error.errors[0]?.message ?? "Invalid input",
-            };
-        }
-
-        return {
-            success: false,
-            error: "An error occurred. Please try again.",
-        };
+        console.error("Error submitting verification:", error);
+        return { success: false, error: "Failed to submit verification. Please try again." };
     }
 }

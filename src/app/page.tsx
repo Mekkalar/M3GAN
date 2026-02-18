@@ -1,181 +1,237 @@
-import Link from 'next/link';
-import { Mail, ArrowRight, Layout, Home, ChevronLeft, Layers, Package, ShieldCheck, Truck, History, Plus, LogIn, UserPlus, UserCheck, User, MessageSquare, MousePointerClick } from 'lucide-react';
+import { auth, signOut } from "~/server/auth";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import {
+    Shield,
+    User,
+    Package,
+    PlusCircle,
+    LogOut,
+    AlertTriangle,
+    Clock,
+    CheckCircle,
+    ChevronRight
+} from "lucide-react";
 
-const TEMPLATES = [
-    {
-        title: 'Landing Page',
-        description: 'Modern Minimal Luxury Home Page',
-        href: '/template-showcase/landing-page',
-        icon: Home
-    },
-    {
-        title: 'OTP Verification',
-        description: 'Security code entry screen',
-        href: '/template-showcase/otp-verification',
-        icon: Mail
-    },
-    {
-        title: 'Product Detail',
-        description: 'Comprehensive product view with gallery and calendar',
-        href: '/template-showcase/product-detail',
-        icon: Layout
-    },
-    {
-        title: 'Search Results',
-        description: 'Product listing with sidebar filters and grid view',
-        href: '/template-showcase/search-results',
-        icon: Layers
-    },
-    {
-        title: 'Booking / Checkout',
-        description: 'Checkout process with date selection and payment options',
-        href: '/template-showcase/booking-checkout',
-        icon: Package
-    },
-    {
-        title: 'Payment (Escrow)',
-        description: 'Secure payment with QR Code and Credit Card escrow',
-        href: '/template-showcase/payment',
-        icon: ShieldCheck
-    },
-    {
-        title: 'Rental Status',
-        description: 'Order timeline tracking and details',
-        href: '/template-showcase/rental-tracking',
-        icon: Truck
-    },
-    {
-        title: 'Rental History',
-        description: 'List of all previous and current rentals',
-        href: '/template-showcase/rental-history',
-        icon: History
-    },
-    {
-        title: 'Login',
-        description: 'Classic luxury login experience',
-        href: '/template-showcase/login',
-        icon: LogIn
-    },
-    {
-        title: 'Register',
-        description: 'Split-view registration for new users',
-        href: '/template-showcase/register',
-        icon: UserPlus
-    },
-    {
-        title: 'KYC Verification',
-        description: 'Identity verification with ID card upload',
-        href: '/template-showcase/kyc-verification',
-        icon: UserCheck
-    },
-    {
-        title: 'User Profile',
-        description: 'Account settings and personal information management',
-        href: '/template-showcase/user-profile',
-        icon: User
-    },
-    {
-        title: 'Chat System',
-        description: 'Full-screen conversation management interface',
-        href: '/template-showcase/chat',
-        icon: MessageSquare
-    },
-    {
-        title: 'Floating Chat',
-        description: 'Minimalist overlay for quick shop communication',
-        href: '/template-showcase/chat/floating-test',
-        icon: MousePointerClick
-    },
-];
+export default async function Dashboard() {
+    const session = await auth();
 
-export default function TemplateShowcasePage() {
+    if (!session) {
+        redirect("/login");
+    }
+
+    const { user } = session;
+
+    // Helper to format phone number (simple mask)
+    const formatPhone = (phone: string | null | undefined) => {
+        if (!phone) return "";
+        // Assuming Thai phone format, mask middle digits: 0812345678 -> 081-xxx-5678
+        if (phone.length >= 10) {
+            return `${phone.substring(0, 3)}-xxx-${phone.substring(phone.length - 4)}`;
+        }
+        return phone;
+    };
+
     return (
-        <main className="min-h-screen bg-slate-50 p-6 doc-bg-pattern font-sans text-foreground flex flex-col items-center">
-
-            {/* Main Container - Extended Width for Grid */}
-            <div className="w-full max-w-7xl space-y-8">
-
-                {/* Header Section - Modern Hero Style */}
-                <div className="relative overflow-hidden rounded-3xl bg-primary text-primary-foreground shadow-[var(--shadow-elevation-medium)]">
-                    {/* Decorative Background Elements */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-1/3 -translate-y-1/3"></div>
-                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-teal-400/20 rounded-full blur-2xl transform -translate-x-1/4 translate-y-1/4"></div>
-
-                    <div className="relative z-10 px-8 py-12 md:py-16 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div className="space-y-4 max-w-2xl">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-xs font-medium tracking-wider uppercase text-white/90">
-                                <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-                                Design System v1.2
-                            </div>
-                            <h1 className="text-4xl md:text-5xl font-sans font-medium tracking-tight text-white leading-tight">
-                                Template Showcase
+        <main className="flex min-h-screen flex-col bg-background font-sans text-body">
+            {/* Hero Section */}
+            <section className="bg-primary px-6 py-12 text-primary-foreground shadow-soft-md md:px-12 md:py-16">
+                <div className="mx-auto max-w-5xl">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+                                Welcome Back
                             </h1>
-                            <p className="text-lg text-white/80 font-light max-w-xl leading-relaxed">
-                                A curated collection of UI components designed with modern minimal luxury conceptualization.
+                            <p className="mt-2 text-lg text-primary-foreground/90">
+                                {formatPhone(user.phone)}
                             </p>
-                        </div>
-
-                        {/* Back to System Button */}
-                        <Link
-                            href="/"
-                            className="group flex items-center gap-2 px-5 py-2.5 bg-white text-primary hover:bg-slate-100 font-medium rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                        >
-                            <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                            <span>Back to System</span>
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Grid Content Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {TEMPLATES.map((item) => (
-                        <Link key={item.href} href={item.href}
-                            className="group relative flex flex-col p-6 bg-card rounded-2xl border border-border shadow-[var(--shadow-elevation-low)] hover:shadow-[var(--shadow-elevation-medium)] transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-                        >
-                            {/* Hover Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-                            <div className="relative z-10 flex items-start justify-between mb-4">
-                                <div className="p-3 rounded-xl bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                                    <item.icon size={24} strokeWidth={1.5} />
-                                </div>
-                                <span className="text-muted/30 group-hover:text-primary/50 transition-colors duration-300 transform group-hover:translate-x-1">
-                                    <ArrowRight size={20} strokeWidth={2} />
+                            <div className="mt-2 flex items-center gap-2">
+                                <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                                    {user.role}
                                 </span>
                             </div>
+                        </div>
 
-                            <div className="relative z-10 mt-auto space-y-2">
-                                <h3 className="font-sans text-xl font-medium text-heading group-hover:text-primary transition-colors duration-300">
-                                    {item.title}
-                                </h3>
-                                <p className="text-sm text-muted leading-relaxed line-clamp-2">
-                                    {item.description}
-                                </p>
+                        <form
+                            action={async () => {
+                                "use server";
+                                await signOut();
+                            }}
+                        >
+                            <button
+                                type="submit"
+                                className="group flex items-center gap-2 rounded-sm border border-white/30 bg-white/10 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-white/20"
+                            >
+                                <LogOut className="h-4 w-4" />
+                                <span>Sign Out</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <div className="mx-auto w-full max-w-5xl px-6 py-8 md:px-12">
+                {/* KYC Status Banner */}
+                <div className="mb-10">
+                    {user.verificationStatus === "UNVERIFIED" || user.verificationStatus === "REJECTED" ? (
+                        <div className="flex flex-col items-start gap-4 rounded-md border border-warning/30 bg-warning/5 p-6 shadow-soft-sm md:flex-row md:items-center md:justify-between">
+                            <div className="flex items-start gap-4">
+                                <div className="rounded-full bg-warning/10 p-2 text-warning">
+                                    <AlertTriangle className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-heading">Identity Verification Required</h3>
+                                    <p className="text-sm text-body">
+                                        To ensure safety and trust in our community, please complete your identity verification to start renting or listing items.
+                                    </p>
+                                </div>
                             </div>
-                        </Link>
-                    ))}
-
-                    {/* New Card Placeholder (for future additions) */}
-                    {TEMPLATES.length < 9 && (
-                        <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-2xl text-center space-y-3 opacity-60 hover:opacity-100 hover:border-primary/50 transition-all duration-300 group cursor-default">
-                            <div className="p-3 rounded-full bg-slate-50 text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-colors">
-                                <Plus size={24} />
+                            <Link
+                                href="/verify-identity"
+                                className="mt-4 flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-sm bg-warning px-6 py-3 text-sm font-bold text-white shadow-soft-sm transition-transform hover:scale-[1.02] hover:shadow-soft-md md:mt-0 md:w-auto"
+                            >
+                                Verify Identity
+                                <ChevronRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+                    ) : user.verificationStatus === "PENDING" ? (
+                        <div className="flex items-center gap-4 rounded-md border border-info/30 bg-info/5 p-6 shadow-soft-sm">
+                            <div className="rounded-full bg-info/10 p-2 text-info">
+                                <Clock className="h-6 w-6" />
                             </div>
                             <div>
-                                <h3 className="font-medium text-slate-500">More Templates</h3>
-                                <p className="text-xs text-slate-400">Coming soon</p>
+                                <h3 className="text-lg font-bold text-heading">Verification in Progress</h3>
+                                <p className="text-sm text-body">
+                                    We are currently reviewing your documents. This usually takes 24-48 hours.
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-4 rounded-md border border-success/30 bg-success/5 p-6 shadow-soft-sm">
+                            <div className="rounded-full bg-success/10 p-2 text-success">
+                                <CheckCircle className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-heading">Verified Member</h3>
+                                <p className="text-sm text-body">
+                                    Your identity has been verified. You have full access to RENTU services.
+                                </p>
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* Footer Info */}
-                <div className="text-center pt-8 pb-4">
-                    <p className="text-xs text-muted/50 uppercase tracking-widest font-medium">
-                        Modern Minimal Luxury • v1.2.1
-                    </p>
-                </div>
+                {/* Quick Actions for Admin/User */}
+                {(user.role === "ADMIN" || user.verificationStatus === "UNVERIFIED" || user.verificationStatus === "REJECTED") && (
+                    <div className="mb-8">
+                        <h2 className="mb-4 text-xl font-bold text-heading">Quick Actions</h2>
+                        <div className="flex flex-wrap gap-4">
+                            {user.role === "ADMIN" && (
+                                <Link
+                                    href="/admin/kyc"
+                                    className="flex items-center gap-3 rounded-sm bg-primary px-6 py-4 text-white shadow-soft-md transition-all hover:bg-primary/90 hover:shadow-soft-lg"
+                                >
+                                    <Shield className="h-5 w-5" />
+                                    <span className="font-bold">Approve KYC Requests</span>
+                                    <ChevronRight className="h-4 w-4 opacity-70" />
+                                </Link>
+                            )}
+                            {(user.verificationStatus === "UNVERIFIED" || user.verificationStatus === "REJECTED") && (
+                                <Link
+                                    href="/verify-identity"
+                                    className="flex items-center gap-3 rounded-sm bg-accent px-6 py-4 text-white shadow-soft-md transition-all hover:bg-accent/90 hover:shadow-soft-lg"
+                                >
+                                    <User className="h-5 w-5" />
+                                    <span className="font-bold">Complete Verification</span>
+                                    <ChevronRight className="h-4 w-4 opacity-70" />
+                                </Link>
+                            )}
+                        </div>
+                    </div>
+                )}
 
+                {/* Dashboard Grid */}
+                <h2 className="mb-6 text-2xl font-bold text-heading">Dashboard</h2>
+
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {/* Admin Actions */}
+                    {user.role === "ADMIN" && (
+                        <Link
+                            href="/admin/kyc"
+                            className="group flex flex-col justify-between rounded-md border border-border bg-card p-6 shadow-soft-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-soft-md"
+                        >
+                            <div>
+                                <div className="mb-4 inline-flex rounded-full bg-primary/10 p-3 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                    <Shield className="h-6 w-6" />
+                                </div>
+                                <h3 className="mb-2 text-lg font-bold text-heading">Review KYC Requests</h3>
+                                <p className="text-sm text-muted">
+                                    Manage and review identity verification submissions from users.
+                                </p>
+                            </div>
+                            <span className="mt-4 flex items-center text-sm font-medium text-primary decoration-2 underline-offset-4 group-hover:underline">
+                                Go to Admin Panel <ChevronRight className="ml-1 h-4 w-4" />
+                            </span>
+                        </Link>
+                    )}
+
+                    {/* User Actions - Browse */}
+                    <Link
+                        href="/browse"
+                        className="group flex flex-col justify-between rounded-md border border-border bg-card p-6 shadow-soft-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-soft-md"
+                    >
+                        <div>
+                            <div className="mb-4 inline-flex rounded-full bg-secondary p-3 text-secondary-foreground group-hover:bg-secondary-foreground group-hover:text-secondary transition-colors">
+                                <Package className="h-6 w-6" />
+                            </div>
+                            <h3 className="mb-2 text-lg font-bold text-heading">Browse Items</h3>
+                            <p className="text-sm text-muted">
+                                Explore a curated collection of luxury items available for rent.
+                            </p>
+                        </div>
+                        <span className="mt-4 flex items-center text-sm font-medium text-primary decoration-2 underline-offset-4 group-hover:underline">
+                            Start Browsing <ChevronRight className="ml-1 h-4 w-4" />
+                        </span>
+                    </Link>
+
+                    {/* User Actions - Listings */}
+                    <Link
+                        href="/listings/create"
+                        className="group flex flex-col justify-between rounded-md border border-border bg-card p-6 shadow-soft-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-soft-md"
+                    >
+                        <div>
+                            <div className="mb-4 inline-flex rounded-full bg-accent/10 p-3 text-accent group-hover:bg-accent group-hover:text-white transition-colors">
+                                <PlusCircle className="h-6 w-6" />
+                            </div>
+                            <h3 className="mb-2 text-lg font-bold text-heading">List an Item</h3>
+                            <p className="text-sm text-muted">
+                                Monetize your luxury assets by listing them for rent on our secure platform.
+                            </p>
+                        </div>
+                        <span className="mt-4 flex items-center text-sm font-medium text-primary decoration-2 underline-offset-4 group-hover:underline">
+                            Create Listing <ChevronRight className="ml-1 h-4 w-4" />
+                        </span>
+                    </Link>
+
+                    {/* User Actions - Profile */}
+                    <Link
+                        href="/profile"
+                        className="group flex flex-col justify-between rounded-md border border-border bg-card p-6 shadow-soft-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-soft-md"
+                    >
+                        <div>
+                            <div className="mb-4 inline-flex rounded-full bg-slate-100 p-3 text-slate-600 group-hover:bg-slate-800 group-hover:text-white transition-colors">
+                                <User className="h-6 w-6" />
+                            </div>
+                            <h3 className="mb-2 text-lg font-bold text-heading">My Profile</h3>
+                            <p className="text-sm text-muted">
+                                Manage your account settings, personal information, and preferences.
+                            </p>
+                        </div>
+                        <span className="mt-4 flex items-center text-sm font-medium text-primary decoration-2 underline-offset-4 group-hover:underline">
+                            View Profile <ChevronRight className="ml-1 h-4 w-4" />
+                        </span>
+                    </Link>
+                </div>
             </div>
         </main>
     );
