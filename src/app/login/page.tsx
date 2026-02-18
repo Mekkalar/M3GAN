@@ -1,9 +1,9 @@
-import { LoginForm } from "~/modules/auth/components/LoginForm";
+import LoginPages from './loginpages';
 
 export default function LoginPage() {
     return (
-        <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-            <LoginForm />
-        </main>
+        <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6 font-sans">
+            <LoginPages endpoint={'/api/auth/login'} />
+        </div>
     );
 }

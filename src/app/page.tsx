@@ -1,120 +1,181 @@
-import { auth, signOut } from "~/server/auth";
-import { redirect } from "next/navigation";
+import Link from 'next/link';
+import { Mail, ArrowRight, Layout, Home, ChevronLeft, Layers, Package, ShieldCheck, Truck, History, Plus, LogIn, UserPlus, UserCheck, User, MessageSquare, MousePointerClick } from 'lucide-react';
 
-export default async function HomePage() {
-    const session = await auth();
+const TEMPLATES = [
+    {
+        title: 'Landing Page',
+        description: 'Modern Minimal Luxury Home Page',
+        href: '/template-showcase/landing-page',
+        icon: Home
+    },
+    {
+        title: 'OTP Verification',
+        description: 'Security code entry screen',
+        href: '/template-showcase/otp-verification',
+        icon: Mail
+    },
+    {
+        title: 'Product Detail',
+        description: 'Comprehensive product view with gallery and calendar',
+        href: '/template-showcase/product-detail',
+        icon: Layout
+    },
+    {
+        title: 'Search Results',
+        description: 'Product listing with sidebar filters and grid view',
+        href: '/template-showcase/search-results',
+        icon: Layers
+    },
+    {
+        title: 'Booking / Checkout',
+        description: 'Checkout process with date selection and payment options',
+        href: '/template-showcase/booking-checkout',
+        icon: Package
+    },
+    {
+        title: 'Payment (Escrow)',
+        description: 'Secure payment with QR Code and Credit Card escrow',
+        href: '/template-showcase/payment',
+        icon: ShieldCheck
+    },
+    {
+        title: 'Rental Status',
+        description: 'Order timeline tracking and details',
+        href: '/template-showcase/rental-tracking',
+        icon: Truck
+    },
+    {
+        title: 'Rental History',
+        description: 'List of all previous and current rentals',
+        href: '/template-showcase/rental-history',
+        icon: History
+    },
+    {
+        title: 'Login',
+        description: 'Classic luxury login experience',
+        href: '/template-showcase/login',
+        icon: LogIn
+    },
+    {
+        title: 'Register',
+        description: 'Split-view registration for new users',
+        href: '/template-showcase/register',
+        icon: UserPlus
+    },
+    {
+        title: 'KYC Verification',
+        description: 'Identity verification with ID card upload',
+        href: '/template-showcase/kyc-verification',
+        icon: UserCheck
+    },
+    {
+        title: 'User Profile',
+        description: 'Account settings and personal information management',
+        href: '/template-showcase/user-profile',
+        icon: User
+    },
+    {
+        title: 'Chat System',
+        description: 'Full-screen conversation management interface',
+        href: '/template-showcase/chat',
+        icon: MessageSquare
+    },
+    {
+        title: 'Floating Chat',
+        description: 'Minimalist overlay for quick shop communication',
+        href: '/template-showcase/chat/floating-test',
+        icon: MousePointerClick
+    },
+];
 
-    if (!session?.user) {
-        redirect("/login");
-    }
-
+export default function TemplateShowcasePage() {
     return (
-        <main className="min-h-screen bg-gray-50">
-            <div className="mx-auto max-w-4xl p-6">
-                {/* Header with Sign Out */}
-                <div className="mb-8 flex items-center justify-between rounded-lg bg-white p-6 shadow-sm">
-                    <div>
-                        <h1 className="text-2xl font-bold">Welcome to m3-gan</h1>
-                        <p className="mt-1 text-gray-600">Phone: {session.user.phone}</p>
-                        <p className="text-sm text-gray-500">
-                            Role: <span className="font-medium">{session.user.role}</span> |
-                            Status: <span className="font-medium">{session.user.verificationStatus}</span>
-                        </p>
+        <main className="min-h-screen bg-slate-50 p-6 doc-bg-pattern font-sans text-foreground flex flex-col items-center">
+
+            {/* Main Container - Extended Width for Grid */}
+            <div className="w-full max-w-7xl space-y-8">
+
+                {/* Header Section - Modern Hero Style */}
+                <div className="relative overflow-hidden rounded-3xl bg-primary text-primary-foreground shadow-[var(--shadow-elevation-medium)]">
+                    {/* Decorative Background Elements */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-1/3 -translate-y-1/3"></div>
+                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-teal-400/20 rounded-full blur-2xl transform -translate-x-1/4 translate-y-1/4"></div>
+
+                    <div className="relative z-10 px-8 py-12 md:py-16 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="space-y-4 max-w-2xl">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-xs font-medium tracking-wider uppercase text-white/90">
+                                <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+                                Design System v1.2
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-sans font-medium tracking-tight text-white leading-tight">
+                                Template Showcase
+                            </h1>
+                            <p className="text-lg text-white/80 font-light max-w-xl leading-relaxed">
+                                A curated collection of UI components designed with modern minimal luxury conceptualization.
+                            </p>
+                        </div>
+
+                        {/* Back to System Button */}
+                        <Link
+                            href="/"
+                            className="group flex items-center gap-2 px-5 py-2.5 bg-white text-primary hover:bg-slate-100 font-medium rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        >
+                            <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                            <span>Back to System</span>
+                        </Link>
                     </div>
-                    <form
-                        action={async () => {
-                            "use server";
-                            await signOut({ redirectTo: "/signup" });
-                        }}
-                    >
-                        <button
-                            type="submit"
-                            className="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                        >
-                            Sign Out
-                        </button>
-                    </form>
                 </div>
 
-                {/* Navigation Cards */}
-                <div className="grid gap-6 md:grid-cols-2">
-                    {/* Verify Identity Card */}
-                    {session.user.verificationStatus === "UNVERIFIED" && (
-                        <a
-                            href="/verify-identity"
-                            className="block rounded-lg border-2 border-blue-200 bg-white p-6 shadow-sm transition hover:border-blue-400 hover:shadow-md"
+                {/* Grid Content Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {TEMPLATES.map((item) => (
+                        <Link key={item.href} href={item.href}
+                            className="group relative flex flex-col p-6 bg-card rounded-2xl border border-border shadow-[var(--shadow-elevation-low)] hover:shadow-[var(--shadow-elevation-medium)] transition-all duration-300 hover:-translate-y-1 overflow-hidden"
                         >
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                                    <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h2 className="text-lg font-semibold">Verify Your Identity</h2>
-                                    <p className="text-sm text-gray-600">Upload your ID card to get verified</p>
-                                </div>
-                            </div>
-                        </a>
-                    )}
+                            {/* Hover Gradient Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-                    {/* Verification Status Card */}
-                    {(session.user.verificationStatus === "PENDING" ||
-                        session.user.verificationStatus === "VERIFIED" ||
-                        session.user.verificationStatus === "REJECTED") && (
-                            <a
-                                href="/verify-identity/pending"
-                                className="block rounded-lg border-2 border-gray-200 bg-white p-6 shadow-sm transition hover:border-gray-400 hover:shadow-md"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                                        <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h2 className="text-lg font-semibold">Verification Status</h2>
-                                        <p className="text-sm text-gray-600">Check your verification status</p>
-                                    </div>
+                            <div className="relative z-10 flex items-start justify-between mb-4">
+                                <div className="p-3 rounded-xl bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                                    <item.icon size={24} strokeWidth={1.5} />
                                 </div>
-                            </a>
-                        )}
-
-                    {/* Admin Dashboard Card */}
-                    {session.user.role === "ADMIN" && (
-                        <a
-                            href="/admin/kyc"
-                            className="block rounded-lg border-2 border-purple-200 bg-white p-6 shadow-sm transition hover:border-purple-400 hover:shadow-md"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-                                    <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h2 className="text-lg font-semibold">Admin Dashboard</h2>
-                                    <p className="text-sm text-gray-600">Review pending KYC verifications</p>
-                                </div>
+                                <span className="text-muted/30 group-hover:text-primary/50 transition-colors duration-300 transform group-hover:translate-x-1">
+                                    <ArrowRight size={20} strokeWidth={2} />
+                                </span>
                             </div>
-                        </a>
+
+                            <div className="relative z-10 mt-auto space-y-2">
+                                <h3 className="font-sans text-xl font-medium text-heading group-hover:text-primary transition-colors duration-300">
+                                    {item.title}
+                                </h3>
+                                <p className="text-sm text-muted leading-relaxed line-clamp-2">
+                                    {item.description}
+                                </p>
+                            </div>
+                        </Link>
+                    ))}
+
+                    {/* New Card Placeholder (for future additions) */}
+                    {TEMPLATES.length < 9 && (
+                        <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-2xl text-center space-y-3 opacity-60 hover:opacity-100 hover:border-primary/50 transition-all duration-300 group cursor-default">
+                            <div className="p-3 rounded-full bg-slate-50 text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-colors">
+                                <Plus size={24} />
+                            </div>
+                            <div>
+                                <h3 className="font-medium text-slate-500">More Templates</h3>
+                                <p className="text-xs text-slate-400">Coming soon</p>
+                            </div>
+                        </div>
                     )}
                 </div>
 
-                {/* Info Box */}
-                <div className="mt-8 rounded-lg bg-blue-50 p-4">
-                    <p className="text-sm text-blue-800">
-                        <strong>💡 Tip:</strong> {session.user.role === "ADMIN"
-                            ? "You have admin access. You can review KYC verifications in the Admin Dashboard."
-                            : session.user.verificationStatus === "UNVERIFIED"
-                                ? "Please verify your identity to unlock all platform features."
-                                : session.user.verificationStatus === "PENDING"
-                                    ? "Your verification is pending review. We'll notify you once it's processed."
-                                    : session.user.verificationStatus === "VERIFIED"
-                                        ? "Your account is verified! You have full access to all features."
-                                        : "Your verification was rejected. Please check the status page for details."}
+                {/* Footer Info */}
+                <div className="text-center pt-8 pb-4">
+                    <p className="text-xs text-muted/50 uppercase tracking-widest font-medium">
+                        Modern Minimal Luxury • v1.2.1
                     </p>
                 </div>
+
             </div>
         </main>
     );

@@ -1,0 +1,78 @@
+/* Design tokens: expose CSS variables on :root so they are available globally */
+:root {
+    /* ─── Modern Minimal Luxury Palette ─── */
+
+    --color-background: #ffffff;
+    --color-foreground: #333333;
+
+    --font-sans: var(--font-noto-sans-thai);
+
+    /* Brand Colors */
+    --color-primary: #00695C;
+    /* Deep Teal */
+    --color-primary-foreground: #ffffff;
+
+    --color-secondary: #E0F2F1;
+    /* Soft Mint/Teal Light */
+    --color-secondary-foreground: #004D40;
+
+    --color-accent: #26A69A;
+    /* Tealer */
+    --color-accent-foreground: #ffffff;
+
+    /* Text Colors */
+    --color-text-heading: #333333;
+    /* Dark Charcoal */
+    --color-text-body: #555555;
+    /* Medium Grey */
+    --color-text-muted: #888888;
+    /* Light Grey */
+
+    /* Neutral Colors */
+    --color-slate-50: #fbfbfb;
+    --color-slate-100: #f3f3f3;
+    --color-slate-200: #e5e5e5;
+    --color-slate-300: #d4d4d4;
+    --color-slate-400: #a3a3a3;
+    --color-slate-500: #737373;
+    --color-slate-600: #525252;
+    --color-slate-700: #404040;
+    --color-slate-800: #262626;
+    --color-slate-900: #171717;
+    --color-slate-950: #0a0a0a;
+
+    /* Feedback Colors (Muted/Elegant) */
+    --color-success: #10B981;
+    /* Emerald 500 */
+    --color-warning: #F59E0B;
+    /* Amber 500 */
+    --color-error: #EF4444;
+    /* Red 500 */
+    --color-info: #3B82F6;
+    /* Blue 500 */
+
+    /* Surface & Borders */
+    --color-surface: #ffffff;
+    --color-surface-foreground: #333333;
+
+    --color-card: #ffffff;
+    --color-card-foreground: #333333;
+
+    --color-border: #E5E5E5;
+
+    /* Shadows - Soft & Elegant */
+    --shadow-soft-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-soft-md: 0 8px 16px rgba(0, 0, 0, 0.04);
+    --shadow-soft-lg: 0 16px 32px rgba(0, 0, 0, 0.04);
+
+    /* Clay/Glass effects (if needed, but keeping it minimal) */
+    --backdrop-blur: blur(8px);
+
+    /* Border Radius - Sharp & Luxury */
+    --radius-sm: 2px;
+    --radius-md: 2px;
+    --radius-lg: 0px;
+    --radius-xl: 0px;
+    --radius-2xl: 0px;
+    --radius-full: 9999px;
+}
