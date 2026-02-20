@@ -196,7 +196,7 @@ export function SignupForm() {
             <div className="mt-8 text-center text-sm">
                 <span className="text-muted">Already a member? </span>
                 <Link href="/login" className="font-bold text-primary hover:underline transition-colors">
-                    Sign In
+                    Log In
                 </Link>
             </div>
         </div>

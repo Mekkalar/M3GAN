@@ -26,10 +26,10 @@ export default function SignupPage() {
                     <div className="mt-6 flex items-center gap-3">
                         <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-white/20">
                             {/* Placeholder for user avatar or branded icon */}
-                            <div className="h-full w-full bg-white/10 flex items-center justify-center font-bold">M</div>
+                            <div className="h-full w-full bg-white/10 flex items-center justify-center font-bold">R</div>
                         </div>
                         <div>
-                            <p className="font-bold text-sm">M3GAN Collection</p>
+                            <p className="font-bold text-sm">RENTU</p>
                             <p className="text-xs text-white/60">Premium Lifestyle Service</p>
                         </div>
                     </div>
