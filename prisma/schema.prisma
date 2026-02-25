@@ -24,9 +24,96 @@ model User {
   accounts             Account[]
   sessions             Session[]
   identityVerification IdentityVerification?
+  items                Item[]
 
   @@index([phone])
   @@index([role])
+}
+
+// ─── Epic 2: Inventory Management ────────────────────────────────────────────
+
+model Item {
+  id               String        @id @default(cuid())
+  ownerId          String
+  title            String
+  description      String        @db.Text
+  brand            String?
+  category         ItemCategory
+  condition        ItemCondition
+  status           ItemStatus    @default(DRAFT)
+  dailyPrice       Int           // THB, stored as integer (satang-free for simplicity)
+  weeklyPrice      Int?          // First-day rate of a 7-day block
+  replacementValue Int           // THB
+  securityDeposit  Int           // THB — validated <= replacementValue in app layer
+  province         String        @default("")
+  district         String        @default("")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  owner            User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  images           ItemImage[]
+  availability     Availability[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([province, district])
+  @@index([category])
+}
+
+model ItemImage {
+  id        String   @id @default(cuid())
+  itemId    String
+  url       String
+  fileKey   String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+}
+
+model Availability {
+  id        String   @id @default(cuid())
+  itemId    String
+  date      DateTime @db.Date
+  isBlocked Boolean  @default(true)  // true = lender manually blocked
+  createdAt DateTime @default(now())
+
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, date])
+  @@index([itemId])
+  @@index([date])
+}
+
+enum ItemStatus {
+  DRAFT
+  PUBLISHED
+  PAUSED
+  ARCHIVED
+}
+
+enum ItemCondition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+}
+
+enum ItemCategory {
+  CAMERAS_PHOTOGRAPHY
+  LENSES_OPTICS
+  VIDEO_CINEMA
+  AUDIO_SOUND
+  DRONES_AERIAL
+  LIGHTING_STUDIO
+  COMPUTERS_TECH
+  SPORTS_OUTDOOR
+  VEHICLES_MOBILITY
+  FASHION_ACCESSORIES
+  HOME_EVENTS
+  OTHER
 }
 
 model OtpCode {

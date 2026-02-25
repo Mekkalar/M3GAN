@@ -10,8 +10,12 @@ import {
     AlertTriangle,
     Clock,
     CheckCircle,
-    ChevronRight
+    ChevronRight,
+    ImageIcon,
+    Tag,
 } from "lucide-react";
+import { getMyItems } from "~/modules/inventory/actions/items";
+import { CATEGORY_LABELS, ItemStatusType, ItemCategoryType } from "~/lib/validators/item";
 
 export default async function Dashboard() {
     const session = await auth();
@@ -21,15 +25,24 @@ export default async function Dashboard() {
     }
 
     const { user } = session;
+    const isVerified = user.verificationStatus === "VERIFIED";
 
-    // Helper to format phone number (simple mask)
+    // Fetch lender's own listings for the dashboard preview
+    const myItems = isVerified ? await getMyItems() : [];
+
     const formatPhone = (phone: string | null | undefined) => {
         if (!phone) return "";
-        // Assuming Thai phone format, mask middle digits: 0812345678 -> 081-xxx-5678
         if (phone.length >= 10) {
             return `${phone.substring(0, 3)}-xxx-${phone.substring(phone.length - 4)}`;
         }
         return phone;
+    };
+
+    const STATUS_STYLES: Record<ItemStatusType, string> = {
+        DRAFT: "bg-amber-100 text-amber-700",
+        PUBLISHED: "bg-green-100 text-green-700",
+        PAUSED: "bg-slate-100 text-slate-600",
+        ARCHIVED: "bg-red-100 text-red-600",
     };
 
     return (
@@ -87,7 +100,7 @@ export default async function Dashboard() {
                                 </div>
                             </div>
                             <Link
-                                href="/verify-identity"
+                                href={"/verify-identity" as never}
                                 className="mt-4 flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-sm bg-warning px-6 py-3 text-sm font-bold text-white shadow-soft-sm transition-transform hover:scale-[1.02] hover:shadow-soft-md md:mt-0 md:w-auto"
                             >
                                 Verify Identity
@@ -107,16 +120,26 @@ export default async function Dashboard() {
                             </div>
                         </div>
                     ) : (
-                        <div className="flex items-center gap-4 rounded-md border border-success/30 bg-success/5 p-6 shadow-soft-sm">
-                            <div className="rounded-full bg-success/10 p-2 text-success">
-                                <CheckCircle className="h-6 w-6" />
+                        <div className="flex flex-col gap-4 rounded-md border border-success/30 bg-success/5 p-6 shadow-soft-sm md:flex-row md:items-center md:justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="rounded-full bg-success/10 p-2 text-success">
+                                    <CheckCircle className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-heading">Verified Member</h3>
+                                    <p className="text-sm text-body">
+                                        Your identity has been verified. You have full access to RENTU services.
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-heading">Verified Member</h3>
-                                <p className="text-sm text-body">
-                                    Your identity has been verified. You have full access to RENTU services.
-                                </p>
-                            </div>
+                            {/* Primary CTA for verified users — Epic 2 */}
+                            <Link
+                                href={"/items/create" as never}
+                                className="flex w-full items-center justify-center gap-2 rounded-sm bg-primary px-6 py-3 font-bold text-white shadow-soft-sm transition-all hover:bg-primary/90 hover:shadow-soft-md md:w-auto"
+                            >
+                                <PlusCircle className="h-4 w-4" />
+                                List an Item
+                            </Link>
                         </div>
                     )}
                 </div>
@@ -128,7 +151,7 @@ export default async function Dashboard() {
                         <div className="flex flex-wrap gap-4">
                             {user.role === "ADMIN" && (
                                 <Link
-                                    href="/admin/kyc"
+                                    href={"/admin/kyc" as never}
                                     className="flex items-center gap-3 rounded-sm bg-primary px-6 py-4 text-white shadow-soft-md transition-all hover:bg-primary/90 hover:shadow-soft-lg"
                                 >
                                     <Shield className="h-5 w-5" />
@@ -138,7 +161,7 @@ export default async function Dashboard() {
                             )}
                             {(user.verificationStatus === "UNVERIFIED" || user.verificationStatus === "REJECTED") && (
                                 <Link
-                                    href="/verify-identity"
+                                    href={"/verify-identity" as never}
                                     className="flex items-center gap-3 rounded-sm bg-accent px-6 py-4 text-white shadow-soft-md transition-all hover:bg-accent/90 hover:shadow-soft-lg"
                                 >
                                     <User className="h-5 w-5" />
@@ -157,7 +180,7 @@ export default async function Dashboard() {
                     {/* Admin Actions */}
                     {user.role === "ADMIN" && (
                         <Link
-                            href="/admin/kyc"
+                            href={"/admin/kyc" as never}
                             className="group flex flex-col justify-between rounded-md border border-border bg-card p-6 shadow-soft-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-soft-md"
                         >
                             <div>
@@ -175,9 +198,9 @@ export default async function Dashboard() {
                         </Link>
                     )}
 
-                    {/* User Actions - Browse */}
+                    {/* Browse */}
                     <Link
-                        href="/browse"
+                        href={"/browse" as never}
                         className="group flex flex-col justify-between rounded-md border border-border bg-card p-6 shadow-soft-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-soft-md"
                     >
                         <div>
@@ -194,9 +217,9 @@ export default async function Dashboard() {
                         </span>
                     </Link>
 
-                    {/* User Actions - Listings */}
+                    {/* List an Item — Epic 2 primary CTA */}
                     <Link
-                        href="/listings/create"
+                        href={"/items/create" as never}
                         className="group flex flex-col justify-between rounded-md border border-border bg-card p-6 shadow-soft-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-soft-md"
                     >
                         <div>
@@ -213,9 +236,9 @@ export default async function Dashboard() {
                         </span>
                     </Link>
 
-                    {/* User Actions - Profile */}
+                    {/* Profile */}
                     <Link
-                        href="/profile"
+                        href={"/profile" as never}
                         className="group flex flex-col justify-between rounded-md border border-border bg-card p-6 shadow-soft-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-soft-md"
                     >
                         <div>
@@ -232,6 +255,79 @@ export default async function Dashboard() {
                         </span>
                     </Link>
                 </div>
+
+                {/* ── My Listings Section (Epic 2) ──────────────────────────── */}
+                {isVerified && (
+                    <div className="mt-12">
+                        <div className="mb-6 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-2xl font-bold text-heading">My Listings</h2>
+                                <p className="text-sm text-muted">{myItems.length} item{myItems.length !== 1 ? "s" : ""}</p>
+                            </div>
+                            <Link href={"/my-listings" as never} className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                                View All <ChevronRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+
+                        {myItems.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-border bg-card py-12 text-center">
+                                <div className="mb-3 rounded-full bg-primary/10 p-3 text-primary">
+                                    <Package className="h-8 w-8" />
+                                </div>
+                                <h3 className="mb-1 font-bold text-heading">No listings yet</h3>
+                                <p className="mb-4 text-sm text-muted">Start earning from your luxury items today.</p>
+                                <Link
+                                    href={"/items/create" as never}
+                                    className="flex items-center gap-2 rounded-sm bg-primary px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-primary/90"
+                                >
+                                    <PlusCircle className="h-4 w-4" />
+                                    Create Your First Listing
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                                {myItems.slice(0, 3).map((item: Awaited<ReturnType<typeof getMyItems>>[number]) => {
+                                    const cover = item.images[0];
+                                    const catLabel = CATEGORY_LABELS[item.category as ItemCategoryType] ?? item.category;
+                                    return (
+                                        <div
+                                            key={item.id}
+                                            className="group overflow-hidden rounded-md border border-border bg-card shadow-soft-sm transition-all hover:-translate-y-1 hover:shadow-soft-md"
+                                        >
+                                            <div className="relative h-36 overflow-hidden bg-slate-100">
+                                                {cover ? (
+                                                    // eslint-disable-next-line @next/next/no-img-element
+                                                    <img src={cover.url} alt={item.title} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                                                ) : (
+                                                    <div className="flex h-full items-center justify-center text-slate-300">
+                                                        <ImageIcon className="h-10 w-10" />
+                                                    </div>
+                                                )}
+                                                <span className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold ${STATUS_STYLES[item.status as ItemStatusType] ?? ""}`}>
+                                                    {item.status}
+                                                </span>
+                                            </div>
+                                            <div className="p-3">
+                                                <p className="mb-0.5 font-bold text-heading line-clamp-1">{item.title || "Untitled Draft"}</p>
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-1 text-xs text-muted">
+                                                        <Tag className="h-3 w-3" />{catLabel}
+                                                    </div>
+                                                    <span className="text-sm font-bold text-primary">฿{item.dailyPrice.toLocaleString("th-TH")}/day</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                                {myItems.length > 3 && (
+                                    <Link href={"/my-listings" as never} className="flex items-center justify-center rounded-md border border-dashed border-border bg-card p-6 text-sm font-medium text-primary hover:bg-slate-50">
+                                        +{myItems.length - 3} more <ChevronRight className="ml-1 h-4 w-4" />
+                                    </Link>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </main>
     );
